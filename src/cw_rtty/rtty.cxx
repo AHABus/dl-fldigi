@@ -509,7 +509,11 @@ bool rtty::rx(bool bit) // original modified for probability test
 					lb = (lost - bytelen / 2) / bytelen;
 
 					/* HOOKS */
-					if(nbits == 8) put_rx_ssdv(c, lb);
+					if(nbits == 8) {
+                        put_rx_ssdv(c, lb);
+                        printf("byte: 0x%02x\n", c);
+                        // TODO: Add hook for binary exporter
+                    }
 
 					if (lb != 0)
 						dl_fldigi::hbtint::extrmgr->skipped(lb);

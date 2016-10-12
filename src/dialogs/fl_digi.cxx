@@ -6976,7 +6976,7 @@ void put_rx_char(unsigned int data, int style, bool extracted)
 	WriteARQ(data);
 	REQ(put_rx_char_flmain, data, style);
 #endif
-
+    // TODO: Add some hook there? no binary guarantee though
     if (!extracted)
     {
         dl_fldigi::hbtint::extrmgr->push(data);

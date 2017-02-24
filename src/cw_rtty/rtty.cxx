@@ -1,9 +1,10 @@
-    // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // rtty.cxx  --  RTTY modem
 //
 // Copyright (C) 2012
 //		Dave Freese, W1HKJ
 //		Stefan Fendt, DO2SMF
+//      Amy Parent, 
 //
 // This file is part of fldigi.
 //
@@ -33,6 +34,7 @@
 #include <fstream>
 using namespace std;
 
+#include "bin_export.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"

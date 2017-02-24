@@ -277,6 +277,7 @@ clean-local:
 # Sources that we build. It is OK to have headers here.
 dl_fldigi_SOURCES += \
 	combo/combo.cxx \
+    cw_rtty/bin_export.cxx \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \

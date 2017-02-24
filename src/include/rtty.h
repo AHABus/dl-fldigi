@@ -37,6 +37,7 @@
 #include "filters.h"
 #include "fftfilt.h"
 #include "digiscope.h"
+#include "bin_export.h"
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
@@ -123,6 +124,8 @@ public:
 	static const int	BITS[];
 
 private:
+    
+    bin_exporter    exporter;
 
 	Oscillator		*m_Osc1;
 	Oscillator		*m_Osc2;

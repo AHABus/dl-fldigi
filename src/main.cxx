@@ -1295,7 +1295,7 @@ double speed_test(int converter, unsigned repeat)
 	src.data_in = new float[src.input_frames];
 	src.data_out = new float[src.output_frames];
 
-	memset(src.data_in, 0, src.input_frames * sizeof(float));
+	memset((void*)src.data_in, 0, src.input_frames * sizeof(float));
 
 	// warm up
 	src_simple(&src, converter, 1);

@@ -159,7 +159,7 @@
 #include "dl_fldigi/flights.h"
 #include "dl_fldigi/hbtint.h"
 #include "dl_fldigi/update.h"
-bool bHAB = false;
+bool bHAB = true;
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL      _("Rig control")

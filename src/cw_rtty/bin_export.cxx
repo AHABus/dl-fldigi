@@ -2,39 +2,33 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include "bin_export.h"
 
-bin_exporter::bin_exporter() : socket_(NULL), socketD_(0), is_open_(false) {
-    socketD_ = socket(PF_LOCAL, SOCK_STREAM, 0);
-    if(socketD_ < 0) {
+bin_exporter::bin_exporter() : socket_(0), client_(-1), is_open_(false) {
+    socket_ = socket(AF_LOCAL, SOCK_STREAM, 0);
+    if(socket_ < 0) {
         perror("error requesting socket from system\n");
         return;
     }
     
+    fcntl(socket_, F_SETFL, O_NONBLOCK);
     struct sockaddr_un name;
+    unlink(BINEX_SOCKET_ADDRESS);
     
     name.sun_family = AF_LOCAL;
-    strcpy(name.sun_path, "/tmp/ahabus.sock-tmp");
-    size_t size = (offsetof (struct sockaddr_un, sun_path)
-          + strlen (name.sun_path));
+    strcpy(name.sun_path, BINEX_SOCKET_ADDRESS);
     
-    if(bind(socketD_, (struct sockaddr*)&name, size) < 0) {
+    if(bind(socket_, (struct sockaddr*)&name, SUN_LEN(&name)) < 0) {
         perror("bind");
-        close(socketD_);
+        close(socket_);
         return;
     }
     
-    if(listen(socketD_, 5) < 0) {
+    if(listen(socket_, 5) < 0) {
         perror("listen");
-        close(socketD_);
-        return;
-    }
-    
-    socket_ = fdopen(socketD_, "r");
-    if(socket_ == NULL) {
-        perror("file ptr");
-        close(socketD_);
+        close(socket_);
         return;
     }
     
@@ -42,12 +36,17 @@ bin_exporter::bin_exporter() : socket_(NULL), socketD_(0), is_open_(false) {
 }
 
 bin_exporter::~bin_exporter() {
-    fclose(socket_);
-    close(socketD_);
+    close(socket_);
 }
 
 void bin_exporter::log(uint8_t data) {
     if(!is_open_) { return; }
-    fwrite(&data, 1, 1, socket_);
-    //data_buffer_.push_front(data);
+    
+    if(client_ < 0) {
+        client_ = accept(socket_, NULL, NULL);
+        if(client_ < 0) { return; }
+        fcntl(client_, F_SETFL, O_NONBLOCK);
+    }
+    
+    write(client_, &data, 1);
 }

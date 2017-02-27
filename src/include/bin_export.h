@@ -5,11 +5,11 @@
 #include <stdint.h>
 #include "ring_buffer.h"
 
-#define BINEX_SOCKET_ADDRESS "/tmp/ahabus.sock-3"
+#define BINEX_SOCKET_ADDRESS "/tmp/ahabus.sock"
 
 class bin_exporter {
-    FILE*                       socket_;
-    int                         socketD_;
+    int                         socket_;
+    int                         client_;
     bool                        is_open_;
     
 public:

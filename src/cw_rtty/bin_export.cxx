@@ -1,26 +1,26 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/un.h>
+#include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "bin_export.h"
 
-bin_exporter::bin_exporter() : socket_(0), client_(-1), is_open_(false) {
-    socket_ = socket(AF_LOCAL, SOCK_STREAM, 0);
-    if(socket_ < 0) {
+bin_exporter::bin_exporter() : socket_(0), is_open_(false) {
+    struct sockaddr_in server;
+    
+    memset(&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    server.sin_port = htons(5555);
+
+    if((socket_ = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("error requesting socket from system\n");
         return;
     }
-    
     fcntl(socket_, F_SETFL, O_NONBLOCK);
-    struct sockaddr_un name;
-    unlink(BINEX_SOCKET_ADDRESS);
     
-    name.sun_family = AF_LOCAL;
-    strcpy(name.sun_path, BINEX_SOCKET_ADDRESS);
-    
-    if(bind(socket_, (struct sockaddr*)&name, SUN_LEN(&name)) < 0) {
+    if(bind(socket_, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) < 0) {
         perror("bind");
         close(socket_);
         return;
@@ -42,11 +42,19 @@ bin_exporter::~bin_exporter() {
 void bin_exporter::log(uint8_t data) {
     if(!is_open_) { return; }
     
-    if(client_ < 0) {
-        client_ = accept(socket_, NULL, NULL);
-        if(client_ < 0) { return; }
-        fcntl(client_, F_SETFL, O_NONBLOCK);
+    int client;
+    socklen_t socksize = sizeof(struct sockaddr_in);
+    struct sockaddr_in dest;
+    
+    
+    if((client = accept(socket_, (struct sockaddr *)&dest, &socksize)) > 0) {
+        clients_.insert(client);
     }
     
-    write(client_, &data, 1);
+    for(auto fd : clients_) {
+        if(write(fd, &data, 1) != 1) {
+            // Remove the client so we don't keep sending them data
+            clients_.erase(fd);
+        }
+    }
 }

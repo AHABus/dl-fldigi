@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <set>
 #include "ring_buffer.h"
 
 #define BINEX_SOCKET_ADDRESS "/tmp/ahabus.sock"
@@ -11,6 +12,7 @@ class bin_exporter {
     int                         socket_;
     int                         client_;
     bool                        is_open_;
+    std::set<int>               clients_;
     
 public:
     

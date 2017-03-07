@@ -12,7 +12,7 @@ bin_exporter::bin_exporter() : socket_(0), is_open_(false) {
     memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(5555);
+    server.sin_port = htons(BINEX_SOCKET_PORT);
 
     if((socket_ = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("error requesting socket from system\n");

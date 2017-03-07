@@ -6,11 +6,10 @@
 #include <set>
 #include "ring_buffer.h"
 
-#define BINEX_SOCKET_ADDRESS "/tmp/ahabus.sock"
+#define BINEX_SOCKET_PORT   (5555)
 
 class bin_exporter {
     int                         socket_;
-    int                         client_;
     bool                        is_open_;
     std::set<int>               clients_;
     
